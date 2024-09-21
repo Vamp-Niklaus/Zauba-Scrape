@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  
+    <link rel="stylesheet" id="stagstyles" href="/static/css/style.css" />
+
+</head>
+<body>
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto"></ul>
+            <div class="ml-auto d-flex align-items-center">
+                <form class="form-inline my-2 my-lg-0" id="searchForm" onsubmit="fetchData(event)">
+                    <div class="form-group mr-sm-2">
+                        <input class="form-control" type="search" placeholder="Company" aria-label="Company" id="company" style="
+                        margin-right: 10px;width: 196px;">
+                        <div class="d-flex mt-2">
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="radio" name="companyColumn" id="companyName" value="Company_Name" checked>
+                                <label class="form-check-label" for="companyName">Company Name</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="companyColumn" id="cin" value="CIN">
+                                <label class="form-check-label" for="cin">CIN</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mr-sm-2">
+                        <input class="form-control" type="search" placeholder="Director" aria-label="Director" id="director" style="
+                        margin-right: 10px;margin-left: 10px;width: 196px;">
+                        <div class="d-flex mt-2">
+                            <div class="form-check mr-3">
+                                <input class="form-check-input" type="radio" name="directorColumn" id="directorName" value="Director_Name" checked>
+                                <label class="form-check-label" for="directorName">Director Name</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="directorColumn" id="din" value="DIN">
+                                <label class="form-check-label" for="din">DIN</label>
+                            </div>
+                        </div>
+                    </div>
+                    <select class="form-control mr-sm-2" id="resultFormat" style ="margin-left: 10px;">
+                        <option value="Join">Join</option>
+                        <option value="Company">Company</option>
+                        <option value="Director">Director</option>
+                    </select>
+                    <select class="form-control mr-sm-2" id="numPages">
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="75">75</option>
+                        <option value="100">100</option>
+                    </select>
+                    <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token }}">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+                <div class="page-controls ml-3">
+                    <button class="btn btn-outline-primary" id="prevPage" onclick="changePage(-1)" disabled>Previous</button>
+                    <span class="page-number" id="currentPage">0</span>
+                    <button class="btn btn-outline-primary" id="nextPage" onclick="changePage(1)" disabled>Next</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    
+    <div class="fullscreen-container" id="loaderContainer">
+        <div class="loader-wrapper">
+            <div class="static-loader"></div>
+        </div>
+    </div>
+    <div class="text-container" id="textContainer">
+        <div class="text-sm-start">
+       <br>
+            <p></p> 
+            <p>     + : stands for intersection. by default</p>
+            <p>     | : stands for union. by default</p>
+            <p>     ~ : stands for not. by default</p>
+            <p>     % : Represents zero or more characters</p>
+            <p>     _ : Represents a single character</p>
+            <p>     \ : this backslash also known as escape charater affets the charater just ahead of it by swithing its properties.</p>
+            <p>     ( or ) : their default property here is normal as any other alphabet charater. here by default they not work as curve bracket</p>
+            <p>     '\(' or '\)' : this will swith the default property of '(' and ')' now they can work in algebric way.</p>
+            <p>     '\~' or '\+' or '\|' : using this ~, + and | will work as any other alphabet character so you can use them as string rather than intersction, union or not.</p>
+            <p>     default solving order is SOP (sum of product). this SOP term is used for equation like this x= AB+C. here first PRODUCT of AB is solved and then SUM is solved.</p>
+            <p>     In above eq (x = AB+C) product stand for intersection and sum for union. So first intersection then union is solved.</p>
+            <p>     So if query is like this  A+B|C then it is equivalent to (A+B)|C. we can say +(and) have higher priority order than |(or)</p>
+        </div>
+    </div>
+    
+
+    <div class="container mt-5">
+        <div class="table-container">
+            <table class="table table-bordered" id="companyTable" >
+                <thead class="fixed-header">
+                    <tr>
+                        <th>Index</th>
+                        <th>CIN</th>
+                        <th>Company Name</th>
+                        <th>Company Status</th>
+                        <th>ROC</th>
+                        <th>LLP Identification Number</th>
+                        <th>Registration Number</th>
+                        <th>Foreign Company Registration Number</th>
+                        <th>Company Category</th>
+                        <th>Company Sub Category</th>
+                        <th>Class of Company</th>
+                        <th>Date of Incorporation</th>
+                        <th>Age of Company</th>
+                        <th>Activity</th>
+                        <th>Number of Members</th>
+                        <th>Authorised Capital</th>
+                        <th>Paid up Capital</th>
+                        <th>Listing Status</th>
+                        <th>Date of Last Annual General Meeting</th>
+                        <th>Date of Latest Balance Sheet</th>
+                        <th>Email ID</th>
+                        <th>Address</th>
+                        <th>URL</th>
+                        <th>Date_of_last_financial_year_end_date_for_which_Annual_Return_filed</th>
+                        <th>Date_of_last_financial_year_end_date_for_which_Statement_of_Accounts_and_Solvency_filed</th>
+                        <th>Description of Main Division</th>
+                        <th>Main Division of Business Activity</th>
+                        <th>Number of Partners</th>
+                        <th>Number of Designated Partners</th>
+                        <th>Total Obligation of Contribution</th>
+                        <th>Country of Incorporation</th>
+                        <th>Type of Office</th>
+                        <th>As on</th>
+                        <th>SN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be appended here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="table-container">
+            <table class="table table-bordered" id="directorTable">
+                <thead class="fixed-header">
+                    <tr>
+                        <th>Index</th>
+                        <th>DIN</th>
+                        <th>SN</th>
+                        <th>Director Name</th>
+                        <th>Designation</th>
+                        <th>Appointment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be appended here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="table-container">
+            <table class="table table-bordered" id="combinedTable" >
+                <thead class="fixed-header">
+                    <tr>
+                        <th>Index</th>
+                        <th>CIN</th>
+                        <th>Company Name</th>
+                        <th>DIN</th>
+                        <th>SN</th>
+                        <th>Director Name</th>
+                        <th>Designation</th>
+                        <th>Appointment Date</th>
+                        <th>Company Status</th>
+                        <th>ROC</th>
+                        <th>LLP Identification Number</th>
+                        <th>Registration Number</th>
+                        <th>Foreign Company Registration Number</th>
+                        <th>Company Category</th>
+                        <th>Company Sub Category</th>
+                        <th>Class of Company</th>
+                        <th>Date of Incorporation</th>
+                        <th>Age of Company</th>
+                        <th>Activity</th>
+                        <th>Number of Members</th>
+                        <th>Authorised Capital</th>
+                        <th>Paid up Capital</th>
+                        <th>Listing Status</th>
+                        <th>Date of Last Annual General Meeting</th>
+                        <th>Date of Latest Balance Sheet</th>
+                        <th>Email ID</th>
+                        <th>Address</th>
+                        <th>URL</th>
+                        <th>Date_of_last_financial_year_end_date_for_which_Annual_Return_filed</th>
+                        <th>Date_of_last_financial_year_end_date_for_which_Statement_of_Accounts_and_Solvency_filed</th>
+                        <th>Description of Main Division</th>
+                        <th>Main Division of Business Activity</th>
+                        <th>Number of Partners</th>
+                        <th>Number of Designated Partners</th>
+                        <th>Total Obligation of Contribution</th>
+                        <th>Country of Incorporation</th>
+                        <th>Type of Office</th>
+                        <th>As on</th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be appended here -->
+                </tbody>
+            </table>
+        </div>
+   
+    </div>
+
+    <script>
+
+
+
+        let currentPage = 1;
+        let currentSearchData = {};
+    
+    
+    
+
+
+
+
+        function searchAndDisplayResults() {
+           
+            const company = document.getElementById('company').value;
+            const director = document.getElementById('director').value;
+            const resultFormat = document.getElementById('resultFormat').value;
+            const numPages = parseInt(document.getElementById('numPages').value, 10);
+            const csrfToken = document.getElementById('csrf_token').value;
+            const companyColumn = document.querySelector('input[name="companyColumn"]:checked').value;
+            const directorColumn = document.querySelector('input[name="directorColumn"]:checked').value;
+    
+            currentSearchData = {
+                company: company,
+                director: director,
+                format: resultFormat,
+                numPages: numPages,
+                page: currentPage,
+                companyColumn:companyColumn,
+                directorColumn:directorColumn
+
+            };
+    
+            // Show dynamic loader and keep the table visible
+            
+            document.querySelector('.static-loader').classList.add('loader'); 
+            document.getElementById('loaderContainer').style.display = 'flex';
+
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken  // Include CSRF token in the headers
+                },
+                body: JSON.stringify(currentSearchData)
+                
+            })
+            .then(response => {
+                
+                console.log('Response received');  // Debug: Check if response is received
+                if (!response.ok) {
+                    document.getElementById('loaderContainer').style.display = 'none';
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || 'Unknown error occurred');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+
+                document.getElementById('loaderContainer').style.display = 'none';
+                document.getElementById('textContainer').style.display = 'none';
+                console.log('Data:', data);  // Debug: Log the data received
+                
+                // Clear previous results
+                let resultsTable;
+                let resultsTableBody;
+                if (resultFormat === 'Company') {
+                    document.getElementById('companyTable').style.display = 'table';
+                    document.getElementById('directorTable').style.display = 'none';
+                    document.getElementById('combinedTable').style.display = 'none';
+                    resultsTable = document.getElementById('companyTable')
+                } else if (resultFormat === 'Director') {
+                    document.getElementById('companyTable').style.display = 'none';
+                    document.getElementById('directorTable').style.display = 'table';
+                    document.getElementById('combinedTable').style.display = 'none';
+                    resultsTable = document.getElementById('directorTable')
+                } else {
+                    document.getElementById('companyTable').style.display = 'none';
+                    document.getElementById('directorTable').style.display = 'none';
+                    document.getElementById('combinedTable').style.display = 'table';
+                    resultsTable = document.getElementById('combinedTable')
+                }
+
+                resultsTableBody=resultsTable.getElementsByTagName('tbody')[0];
+                resultsTableBody.innerHTML = '';
+    
+                // Append new results to the table
+                data.results.forEach((row, index) => {
+                    const newRow = resultsTableBody.insertRow();
+                    const serialNumberCell = newRow.insertCell();
+                    serialNumberCell.textContent = (currentPage - 1) * numPages + index + 1; // Calculate serial number
+                    row.forEach(cellData => {
+                        const newCell = newRow.insertCell();
+                        newCell.textContent = cellData;
+                    });
+                });
+    
+                document.getElementById('loaderContainer').style.display = 'none';
+                
+                // Update pagination controls
+                document.getElementById('currentPage').textContent = currentPage;
+                document.getElementById('prevPage').disabled = currentPage === 1;
+                document.getElementById('nextPage').disabled = data.results.length < numPages;
+               
+            })
+            .catch(error => {
+                document.getElementById('loaderContainer').style.display = 'none'; 
+                alert('Error: ' + error.message);
+            });
+        }
+    
+
+        function fetchData(event) {
+            event.preventDefault();  // Prevent the form from submitting the default way
+            currentPage = 1;
+            searchAndDisplayResults();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            searchAndDisplayResults();
+        }
+    
+        window.onload = function() {
+            document.getElementById('loaderContainer').style.display = 'none';
+            document.getElementById('companyTable').style.display = 'none';
+            document.getElementById('directorTable').style.display = 'none';
+            document.getElementById('combinedTable').style.display = 'none';
+        }
+    </script>
+    
+</body>
+</html>

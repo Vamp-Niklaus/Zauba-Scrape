@@ -1,0 +1,32 @@
+
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+            </ul>
+            <form class="form-inline my-2 my-lg-0" id="searchForm" onsubmit="fetchData(event)">
+                <input class="form-control mr-sm-2" type="search" placeholder="Company" aria-label="Company" id="company">
+                <input class="form-control mr-sm-2" type="search" placeholder="Director" aria-label="Director" id="director">
+                <select class="form-control mr-sm-2" id="resultFormat">
+                    <option value="A">Format A</option>
+                    <option value="B">Format B</option>
+                    <option value="C">Format C</option>
+                </select>
+                <select class="form-control mr-sm-2" id="numPages">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="75">75</option>
+                    <option value="100">100</option>
+                </select>
+                <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token }}">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            <div class="page-controls ml-3">
+                <button class="btn btn-outline-primary" id="prevPage" onclick="changePage(-1)" disabled>Previous</button>
+                <span class="page-number" id="currentPage">0</span>
+                <button class="btn btn-outline-primary" id="nextPage" onclick="changePage(1)" disabled>Next</button>
+            </div>
+        </div>
+    </nav>
+
+  

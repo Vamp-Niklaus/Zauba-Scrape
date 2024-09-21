@@ -1,0 +1,12 @@
+{
+  "name": "part2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "fetchAndExtract.js",
+  "scripts": {
+    "start": "node fetchAndExtract.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
